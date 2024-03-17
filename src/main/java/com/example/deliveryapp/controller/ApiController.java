@@ -2,6 +2,8 @@ package com.example.deliveryapp.controller;
 
 import com.example.deliveryapp.entity.Observations;
 import com.example.deliveryapp.entity.Station;
+import com.example.deliveryapp.entity.WeatherData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 

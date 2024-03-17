@@ -1,9 +1,6 @@
 package com.example.deliveryapp.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
+@Table(name="WEATHERDATA")
 public class WeatherData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long observationId;
     private String stationName;
+    private String wmocode;
     private double airtemperature;
     private double windspeed;
     private String phenomenon;
