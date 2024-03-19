@@ -26,7 +26,6 @@ dependencies {
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-    compileOnly 'org.projectlombok:lombok'
     implementation 'javax.validation:validation-api:2.0.1.Final'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
