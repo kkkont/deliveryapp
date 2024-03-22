@@ -67,7 +67,10 @@ public class DeliveryFeeService {
     }
 
     /**
-     * Fetches weather data
+     * Retrieves weather data.
+     * If a date and time are specified, it determines the corresponding hour and retrieves
+     * weather data for that hour or the previous hour (weather observations are refreshed
+     * every 10 minutes past the full hour, so hour:09 belongs to previous observation).
      * @param stationName station name
      * @param dateTime date and time if specified
      * @return weather data
@@ -84,12 +87,7 @@ public class DeliveryFeeService {
 
             weatherData = getWeatherDataForStationByTime(stationName, specificTime);
 
-            if (weatherData == null)
-                // If we have not yet used cronjob for fetching data then
-                // I will use the only one observations time I have and check if the specific timeframe fits
-                if(isLatestWeatherDataValidForSpecificTime(stationName , specificTime)){
-                    weatherData = getLatestWeatherDataForStation(stationName);
-                }else throw new Exception("There is no data for this specific date or time!");
+            if (weatherData == null) throw new Exception("There is no data for this specific date or time!");
         } else {
             weatherData = getLatestWeatherDataForStation(stationName);
         }

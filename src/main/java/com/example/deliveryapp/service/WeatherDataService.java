@@ -25,15 +25,6 @@ public class WeatherDataService {
         this.weatherDataRepository = weatherDataRepository;
     }
 
-    /**
-     * Imports weather data from the API during application startup.
-     *
-     * @throws Exception if an error occurs during API handling.
-     */
-    @PostConstruct
-    public void onStartup() throws Exception {
-        importWeatherData();
-    }
 
     /**
      * Fetches weather data from the API every hour at 10 minutes past the hour (when the api is also refreshed)
