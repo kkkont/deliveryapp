@@ -36,7 +36,7 @@ public class WeatherDataService {
     }
 
     /**
-     * Fetches weather data from the API every hour at 10 minutes past the hour.
+     * Fetches weather data from the API every hour at 10 minutes past the hour (when the api is also refreshed)
      * This method retrieves weather information from the API and stores it in the database.
      * Only data from specific weather stations ("Tartu-Tõravere", "Tallinn-Harku", and "Pärnu")
      * is processed and saved.
