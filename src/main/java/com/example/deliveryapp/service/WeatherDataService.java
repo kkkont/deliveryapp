@@ -60,7 +60,7 @@ public class WeatherDataService {
     /**
      * Checks if station is valid
      * @param stationName station name
-     * @return
+     * @return boolean if station name is valid
      */
     private boolean isValidStation(String stationName) {
         return stationName.equals("Tallinn-Harku") || stationName.equals("Tartu-Tõravere") || stationName.equals("Pärnu");
@@ -70,7 +70,7 @@ public class WeatherDataService {
      * Splits the element into pieces for weatherData entity.
      * @param stationElement an element from xml file
      * @param stationName station name
-     * @return
+     * @return creates weather data entity
      */
     private WeatherData createWeatherData(Element stationElement, String stationName) {
         WeatherData weatherData = new WeatherData();
