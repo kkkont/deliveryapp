@@ -2,27 +2,45 @@ package com.example.deliveryapp.service;
 
 import com.example.deliveryapp.entity.WeatherData;
 import com.example.deliveryapp.repository.WeatherDataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class DeliveryFeeService {
-    @Autowired
-    private WeatherDataRepository weatherDataRepository;
-
     private final Map<String, Map<String, Double>> rbfValues = new HashMap<>();
+    private final WeatherDataRepository weatherDataRepository;
+
+    public DeliveryFeeService(WeatherDataRepository weatherDataRepository) {
+        this.weatherDataRepository = weatherDataRepository;
+    }
 
     public double calculateDeliveryFee(String station, String vehicle) throws Exception {
-        double RBF = getRBF(station, vehicle);
+        String stationLC = station.toLowerCase();
+        String vehicleLC = vehicle.toLowerCase();
 
-        WeatherData latestWeatherData = getLatestWeatherDataForStation(station);
-        double extraFee = getExtraFee(vehicle, latestWeatherData);
+        if (!(stationLC.equals("tartu") || stationLC.equals("tallinn") || stationLC.equals("pärnu"))) {
+            throw new IllegalArgumentException("Invalid station. Allowed values are Tartu, Tallinn, Pärnu.");
+        }
+
+        if (!(vehicleLC.equals("car") || vehicleLC.equals("bike") || vehicleLC.equals("scooter"))) {
+            throw new IllegalArgumentException("Invalid vehicle. Allowed values are car, bike, scooter.");
+        }
+
+        String stationName = switch (stationLC) {
+            case "tartu" -> "Tartu-Tõravere";
+            case "tallinn" -> "Tallinn-Harku";
+            case "pärnu" -> "Pärnu";
+            default -> null;
+        };
+        WeatherData latestWeatherData = getLatestWeatherDataForStation(stationName);
+
+        double RBF = getRBF(stationLC, vehicleLC);
+
+        double extraFee = getExtraFee(vehicleLC, latestWeatherData);
 
         return RBF + extraFee;
     }
@@ -42,7 +60,7 @@ public class DeliveryFeeService {
     }
 
     private double getWPEF(String vehicle, String phenomenon) throws Exception {
-        if (vehicle.equals("Scooter") || vehicle.equals("Bike")) {
+        if (vehicle.equals("scooter") || vehicle.equals("bike")) {
             String phenomenonClass = getPhenomenonClass(phenomenon);
 
             switch (phenomenonClass) {
@@ -74,7 +92,7 @@ public class DeliveryFeeService {
     }
 
     private double getWSEF(String vehicle, double windSpeed) throws Exception {
-        if (vehicle.equals("Bike")) {
+        if (vehicle.equals("bike")) {
             if (windSpeed > 10 && windSpeed <= 20) return 0.5;
             else if (windSpeed > 20) throw new Exception("Usage of selected vehicle type is forbidden");
         }
@@ -82,7 +100,7 @@ public class DeliveryFeeService {
     }
 
     private double getATEF(String vehicle, double airTemperature) {
-        if (vehicle.equals("Scooter") || vehicle.equals("Bike")) {
+        if (vehicle.equals("scooter") || vehicle.equals("bike")) {
             if (airTemperature <= -10.0) return 1;
             else if (-10 < airTemperature && airTemperature <= 0) return 0.5;
         }
@@ -97,27 +115,27 @@ public class DeliveryFeeService {
 
     private void getRBFValues() {
         Map<String, Double> tallinRBF = new HashMap<>();
-        tallinRBF.put("Car", 4.0);
-        tallinRBF.put("Scooter", 3.5);
-        tallinRBF.put("Bike", 3.0);
-        rbfValues.put("Tallinn-Harku", tallinRBF);
+        tallinRBF.put("car", 4.0);
+        tallinRBF.put("scooter", 3.5);
+        tallinRBF.put("bike", 3.0);
+        rbfValues.put("tallinn", tallinRBF);
 
         Map<String, Double> tartuRBF = new HashMap<>();
-        tartuRBF.put("Car", 3.5);
-        tartuRBF.put("Scooter", 3.0);
-        tartuRBF.put("Bike", 2.5);
-        rbfValues.put("Tartu-Tõravere", tartuRBF);
+        tartuRBF.put("car", 3.5);
+        tartuRBF.put("scooter", 3.0);
+        tartuRBF.put("bike", 2.5);
+        rbfValues.put("tartu", tartuRBF);
 
         Map<String, Double> parnuRBF = new HashMap<>();
-        parnuRBF.put("Car", 3.0);
-        parnuRBF.put("Scooter", 2.5);
-        parnuRBF.put("Bike", 2.0);
-        rbfValues.put("Pärnu", parnuRBF);
+        parnuRBF.put("car", 3.0);
+        parnuRBF.put("scooter", 2.5);
+        parnuRBF.put("bike", 2.0);
+        rbfValues.put("pärnu", parnuRBF);
     }
 
-    public WeatherData getLatestWeatherDataForStation(String city) {
+    private WeatherData getLatestWeatherDataForStation(String city) {
         PageRequest pageable = PageRequest.of(0, 1); // Fetch the first record
-        return weatherDataRepository.findLatestByStationName(city, pageable).get(0);
+        return weatherDataRepository.findTopByStationNameOrderByTimestampDesc(city, pageable).get(0);
     }
 
 }

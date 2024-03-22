@@ -3,8 +3,7 @@ package com.example.deliveryapp.service;
 
 import com.example.deliveryapp.entity.WeatherData;
 import com.example.deliveryapp.repository.WeatherDataRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import jakarta.annotation.PostConstruct;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -14,16 +13,22 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
 
 @Service
 public class WeatherDataService {
-    @Autowired
-    private WeatherDataRepository weatherDataRepository;
+    private final WeatherDataRepository weatherDataRepository;
 
-    //@Scheduled(cron = "0 15 * * * ?")
+    public WeatherDataService(WeatherDataRepository weatherDataRepository) {
+        this.weatherDataRepository = weatherDataRepository;
+    }
+
+    @PostConstruct
+    public void onStartup() throws Exception {
+        importWeatherData();
+    }
+    @Scheduled(cron = "0 10 * * * ?")
     public void importWeatherData() throws Exception {
         String xmlFilePath = "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php";
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -38,7 +43,6 @@ public class WeatherDataService {
             if (stationNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element stationElement = (Element) stationNode;
                 String station_name = stationElement.getElementsByTagName("name").item(0).getTextContent();
-                System.out.println("SIIN!!!");
                 if (station_name.equals("Tallinn-Harku") || station_name.equals("Tartu-Tõravere") || station_name.equals("Pärnu")) {
                     WeatherData weatherData = new WeatherData();
                     weatherData.setStationName(station_name);
@@ -54,7 +58,5 @@ public class WeatherDataService {
         }
 
     }
-
-
 }
 
