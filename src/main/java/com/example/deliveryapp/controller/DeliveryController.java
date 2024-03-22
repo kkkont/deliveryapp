@@ -21,12 +21,13 @@ public class DeliveryController {
     }
 
     /**
-     * Get the delivery fee based on the city, vehicle type, and optional date time.
+     * Retrieves the delivery fee based on the specified city and vehicle type,
+     * optionally considering the provided date and time.
      *
-     * @param city        city for delivery
-     * @param vehicleType vehicle type for delivery
-     * @param dateTime    optional date and time
-     * @return delivery fee or error message
+     * @param city        The city for the delivery.
+     * @param vehicleType The type of vehicle used for the delivery.
+     * @param dateTime    (Optional) The date and time of the delivery.
+     * @return The delivery fee or an error message if invalid parameters are provided.
      */
     @GetMapping("/fee")
     public ResponseEntity<?> getDeliveryFee(@RequestParam String city, @RequestParam String vehicleType, @RequestParam(required = false) String dateTime) {

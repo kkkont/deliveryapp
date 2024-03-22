@@ -20,12 +20,13 @@ public class DeliveryFeeService {
     }
 
     /**
-     * Method calculate delivery fee based on business rules
-     * @param station station name
-     * @param vehicle vehicle type
-     * @param dateTime specific date
-     * @return delivery fee
-     * @throws Exception - handles wrong input values. forbidden vehicle use, specific date not existing in the database
+     * Calculates the delivery fee based on predefined business rules.
+     *
+     * @param station   The name of the station.
+     * @param vehicle   The type of vehicle.
+     * @param dateTime  (Optional) The specific date and time for the delivery.
+     * @return The calculated delivery fee.
+     * @throws Exception If there are issues with the input values (e.g., forbidden vehicle use) or if the specific date does not exist in the database.
      */
     public double calculateDeliveryFee(String station, String vehicle, LocalDateTime dateTime) throws Exception {
 

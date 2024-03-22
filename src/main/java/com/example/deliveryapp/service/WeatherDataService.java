@@ -26,8 +26,9 @@ public class WeatherDataService {
     }
 
     /**
-     * imports weather data on application startup
-     * @throws Exception anything gone wrong on api handling
+     * Imports weather data from the API during application startup.
+     *
+     * @throws Exception if an error occurs during API handling.
      */
     @PostConstruct
     public void onStartup() throws Exception {
@@ -35,11 +36,12 @@ public class WeatherDataService {
     }
 
     /**
-     * On the 10nth minute of every hour method fetches weather data from api.
-     * Method sorts out specific station which are required for
-     * this application ("Tartu-Tõravere", "Tallinn-Harku" and "Pärnu")
-     * Method also saves weather data to database
-     * @throws Exception anything gone wrong on api handling
+     * Fetches weather data from the API every hour at 10 minutes past the hour.
+     * This method retrieves weather information from the API and stores it in the database.
+     * Only data from specific weather stations ("Tartu-Tõravere", "Tallinn-Harku", and "Pärnu")
+     * is processed and saved.
+     *
+     * @throws Exception if any error occurs during API handling
      */
     @Scheduled(cron = "0 10 * * * ?")
     public void importWeatherData() throws Exception {
