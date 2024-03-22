@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class WeatherDataService {
@@ -24,10 +25,22 @@ public class WeatherDataService {
         this.weatherDataRepository = weatherDataRepository;
     }
 
+    /**
+     * imports weather data on application startup
+     * @throws Exception anything gone wrong on api handling
+     */
     @PostConstruct
     public void onStartup() throws Exception {
         importWeatherData();
     }
+
+    /**
+     * On the 10nth minute of every hour method fetches weather data from api.
+     * Method sorts out specific station which are required for
+     * this application ("Tartu-Tõravere", "Tallinn-Harku" and "Pärnu")
+     * Method also saves weather data to database
+     * @throws Exception anything gone wrong on api handling
+     */
     @Scheduled(cron = "0 10 * * * ?")
     public void importWeatherData() throws Exception {
         String xmlFilePath = "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php";
@@ -42,21 +55,42 @@ public class WeatherDataService {
             Node stationNode = stationList.item(i);
             if (stationNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element stationElement = (Element) stationNode;
-                String station_name = stationElement.getElementsByTagName("name").item(0).getTextContent();
-                if (station_name.equals("Tallinn-Harku") || station_name.equals("Tartu-Tõravere") || station_name.equals("Pärnu")) {
-                    WeatherData weatherData = new WeatherData();
-                    weatherData.setStationName(station_name);
-                    weatherData.setWmoCode(stationElement.getElementsByTagName("wmocode").item(0).getTextContent());
-                    weatherData.setAirTemperature(Double.parseDouble(stationElement.getElementsByTagName("airtemperature").item(0).getTextContent()));
-                    weatherData.setWindSpeed(Double.parseDouble(stationElement.getElementsByTagName("windspeed").item(0).getTextContent()));
-                    weatherData.setWeatherPhenomenon(stationElement.getElementsByTagName("phenomenon").item(0).getTextContent());
-                    weatherData.setTimestamp(LocalDateTime.now());
-
+                String stationName = stationElement.getElementsByTagName("name").item(0).getTextContent();
+                if (isValidStation(stationName)) {
+                    WeatherData weatherData = createWeatherData(stationElement,stationName);
                     weatherDataRepository.save(weatherData);
                 }
             }
         }
 
+    }
+
+
+    /**
+     * Checks if station is valid
+     * @param stationName station name
+     * @return
+     */
+    private boolean isValidStation(String stationName) {
+        return stationName.equals("Tallinn-Harku") || stationName.equals("Tartu-Tõravere") || stationName.equals("Pärnu");
+    }
+
+    /**
+     * Splits the element into pieces for weatherData entity.
+     * @param stationElement an element from xml file
+     * @param stationName station name
+     * @return
+     */
+    private WeatherData createWeatherData(Element stationElement, String stationName) {
+        WeatherData weatherData = new WeatherData();
+        weatherData.setStationName(stationName);
+        weatherData.setWmoCode(stationElement.getElementsByTagName("wmocode").item(0).getTextContent());
+        weatherData.setAirTemperature(Double.parseDouble(stationElement.getElementsByTagName("airtemperature").item(0).getTextContent()));
+        weatherData.setWindSpeed(Double.parseDouble(stationElement.getElementsByTagName("windspeed").item(0).getTextContent()));
+        weatherData.setWeatherPhenomenon(stationElement.getElementsByTagName("phenomenon").item(0).getTextContent());
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        weatherData.setTimestamp(now);
+        return weatherData;
     }
 }
 

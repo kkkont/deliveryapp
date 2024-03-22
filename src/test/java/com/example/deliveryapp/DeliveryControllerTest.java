@@ -28,4 +28,14 @@ public class DeliveryControllerTest {
         System.out.println("Response Body: " + responseBody);
 
     }
+
+    @Test
+    public void testGetDeliveryFeeWrongInput() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/delivery/fee?city=tallinn&vehicleType=bus", String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        String responseBody = response.getBody();
+        System.out.println("Response Body: " + responseBody);
+    }
 }
