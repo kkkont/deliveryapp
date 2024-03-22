@@ -3,7 +3,6 @@ package com.example.deliveryapp.service;
 
 import com.example.deliveryapp.entity.WeatherData;
 import com.example.deliveryapp.repository.WeatherDataRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -24,7 +23,6 @@ public class WeatherDataService {
     public WeatherDataService(WeatherDataRepository weatherDataRepository) {
         this.weatherDataRepository = weatherDataRepository;
     }
-
 
     /**
      * Fetches weather data from the API every hour at 10 minutes past the hour (when the api is also refreshed)
