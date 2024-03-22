@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
+
 import static junit.framework.TestCase.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -28,10 +30,39 @@ public class DeliveryControllerTest {
         System.out.println("Response Body: " + responseBody);
 
     }
+    @Test
+    public void testGetDeliveryFeeWithDate() {
+        String date = LocalDateTime.now().toString();
+
+        ResponseEntity<Double> response = restTemplate.getForEntity("/delivery/fee?city=tallinn&vehicleType=scooter&dateTime=" + date, Double.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Double responseBody = response.getBody();
+        System.out.println("Response Body: " + responseBody);
+
+    }
+    @Test
+    public void testGetDeliveryFeeWrongInputDate() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/delivery/fee?city=tallinn&vehicleType=scooter&dateTime=2024-03-22T18:09:01", String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        String responseBody = response.getBody();
+        System.out.println("Response Body: " + responseBody);
+    }
 
     @Test
-    public void testGetDeliveryFeeWrongInput() {
+    public void testGetDeliveryFeeWrongInputVehicle() {
         ResponseEntity<String> response = restTemplate.getForEntity("/delivery/fee?city=tallinn&vehicleType=bus", String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+        String responseBody = response.getBody();
+        System.out.println("Response Body: " + responseBody);
+    }
+
+    @Test
+    public void testGetDeliveryFeeWrongInputCity() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/delivery/fee?city=narva&vehicleType=bike", String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
