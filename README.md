@@ -9,8 +9,8 @@ Sub-functionality of the food delivery application which calculates the delivery
 - H2 Database
 
 ## Features
-- **Database for Storing and Manipulating Data:** Uses H2 database technology to store and manage weather data fetched from an external API.
-- **Configurable Scheduled Task:** Implements a scheduled task using CronJob to import weather data at regular intervals.
+- **Database for Storing and Manipulating Data:** Uses H2 database technology to store and manage weather data fetched from an external API (https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php)
+- **Configurable Scheduled Task:** Implements a scheduled task using CronJob to import weather data at regular intervals. 
 - **Functionality to Calculate Delivery Fee:** Calculates the delivery fee based on city, vehicle type, and (optional) date.
 - **REST Interface:** Provides a RESTful API endpoint to request the delivery fee based on input parameters.
 
